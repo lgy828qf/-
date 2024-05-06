@@ -3,7 +3,7 @@
 // @name:en         赛尔号启航护肝小助手
 // @namespace       赛尔号启航护肝小助手
 // @version         0.1
-// @description     赛尔号启航护肝小助手
+// @description     赛尔号启航护肝小助手.
 // @description:en  helpersaiier
 // @include         http://s.61.com/*
 // @require         https://greasyfork.org/scripts/372672-everything-hook/code/Everything-Hook.js?version=881251
@@ -12,8 +12,6 @@
 // @run-at          document-start
 // @grant           none
 // @license         GPL-3.0-or-later
-// @downloadURL https://update.greasyfork.org/scripts/467222/%E8%B5%9B%E5%B0%94%E5%8F%B7%E5%90%AF%E8%88%AAPc.user.js
-// @updateURL https://update.greasyfork.org/scripts/467222/%E8%B5%9B%E5%B0%94%E5%8F%B7%E5%90%AF%E8%88%AAPc.meta.js
 // ==/UserScript==
 (function () {
     document.addEventListener('DOMContentLoaded', function () {
