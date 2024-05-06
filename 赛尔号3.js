@@ -2,12 +2,12 @@
 // @name            赛尔号启航Pc
 // @name:en         赛尔号启航Pc
 // @namespace       赛尔号启航Pc
-// @version         3.1.3
+// @version         0.1
 // @description     赛尔号启航Pc.
 // @description:en  helpersaiier
 // @include         http://s.61.com/*
 // @require         https://greasyfork.org/scripts/372672-everything-hook/code/Everything-Hook.js?version=881251
-// @author          2942332601QQ
+// @author          那一缕风啊
 // @match           https://s.61.com/*
 // @run-at          document-start
 // @grant           none
