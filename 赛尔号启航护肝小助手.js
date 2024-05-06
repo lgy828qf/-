@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name            赛尔号启航护肝小助手
-// @name:en         赛尔号启航护肝小助手
-// @namespace       赛尔号启航护肝小助手
+// @name            护肝小助手
+// @name:en         护肝小助手
+// @namespace       护肝小助手
 // @version         0.1
 // @description     赛尔号启航护肝小助手.
 // @description:en  helpersaiier
