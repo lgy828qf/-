@@ -1658,13 +1658,13 @@
                 "idList": [],
                 "saveType": 0
             })
-            let layers = floorContent.roundTimes + 1
-            writeLog("当前层数:" + layers)
-            if (end) {
+            let layers = floorContent.levelId
+            if (end && layers === 1) {
                 await wait(200)
                 writeLog("顺利击毙教皇！，脚本结束")
                 break
             }
+            writeLog("当前层数:" + layers)
             if (layers < 13) {
                 await popeFight(0, '释放光闪击', 100023)
             } else if (layers >= 13) {
@@ -1727,7 +1727,7 @@
         while (1) {
             await wait(100)
             await sendMsg(1184, {})
-            let layers = ptfloorContent.roundTimes + 1
+            let layers = ptfloorContent.levelId
             writeLog("当前层数:" + layers)
             if (layers >= 31 && ptfloorContent.bossMaxHp === 0) {
                 await wait(100)
@@ -1810,7 +1810,7 @@
             cap = ItemManager.getInstance().getItemNumById(opt)
         }
         let nowStr = opt == "4001" ? "普通" : opt == "4002" ? "中级" : opt == "4003" ? "高级" : "";
-        writeLog(`目前${nowStr}胶囊剩余数量:` + cap);
+        writeLog(`目前${nowStr}胶囊剩余数量:${cap}`);
         let randomIndex
         let levelId
         try {
@@ -1843,6 +1843,178 @@
             Pet = PetManager.getInstance().getPetInfoByGetTime(FirgetTime)
         }
         await sendSkillAndCatch(Pet.skills[0], parseInt(opt))
+    }
+
+    function getSelectedOptions() {
+        let selectElement = document.querySelector('#capsuleSelectId');
+        let selectedValue = selectElement.options[selectElement.selectedIndex].value;
+        return selectedValue;
+    }
+
+    function getRound() {
+        const round = document.querySelector('#round');
+        return round.value;
+    }
+
+    function getRandomIndex(array) {
+        let randomIndex = Math.floor(Math.random() * array.length);
+        return randomIndex;
+    }
+
+    async function sendSkillAndCatch(nowSkillId, capID) {
+        await sendMsg(1042, {
+            "groupId": "",
+            "battleType": 0
+        })
+        await wait(100)
+        await sendMsg(1045, {
+            "opType": 5,
+            "data": null,
+            "groupId": ""
+        })
+        await wait(100)
+        while (1) {
+            if (nextRound == true) {
+                writeLog("顺利进入对局！")
+                nextRound = false
+                break
+            } else {
+                await wait(50)
+            }
+        }
+        await wait(100)
+        while (1) {
+            await sendMsg(1057, {
+                "groupId": ""
+            })
+            await sendMsg(1045, {
+                "opType": 1,
+                "data": {
+                    "skillID": nowSkillId
+                },
+                "groupId": ""
+            })
+
+            let wildMonsterHP = PetMsgDetail.result.playerInfos[1].petInfos[0].crtHp
+            if (wildMonsterHP >= 500) {
+                writeLog(`野怪开始HP异常：${wildMonsterHP}`)
+                return
+            } else {
+                writeLog(`野怪开始HP：${wildMonsterHP}`)
+            }
+
+            while (1) {
+                if (nextRound == true) {
+                    writeLog("继续释放技能！")
+                    nextRound = false
+                    break
+                } else {
+                    await wait(50)
+                }
+            }
+            //等待1s  等待288结算的出现
+            let oldTime = new Date().getTime()
+            while (1) {
+                if ((new Date().getTime() - oldTime) / 1000 < 2) {
+                    if (doneRound == true) {
+                        console.log("##############战斗结束##############")
+                        doneRound = false
+                        await wait(50)
+                        catchCount++
+                        return
+                    } else {
+                        await wait(50)
+                    }
+                } else {
+                    break
+                }
+            }
+
+            if (wildMonsterHP <= 1) {
+                writeLog("野怪剩余HP：" + wildMonsterHP)
+                writeLog("开始捕捉！")
+                await wait(1000)
+                await sendMsg(1057, {
+                    "groupId": ""
+                })
+                await wait(1000)
+                break
+            }
+        }
+        let useC = 0
+        changePet = ""
+        while (1) {
+            if (useC >= catchRound) {
+                writeLog(catchRound + "回合还没捕捉到，跑路了")
+                await sendMsg(8201, {})
+                await sendMsg(8209, {})
+                //逃跑
+                await sendMsg(303, {})
+                return
+            }
+
+            useC++
+            writeLog("野怪剩余HP：" + wildMonsterHP)
+            writeLog("丢出第" + useC + "次胶囊捕捉~")
+            await sendMsg(1045, {
+                "opType": 3,
+                "data": {
+                    "itemID": capID
+                },
+                "groupId": ""
+            })
+
+            await wait(200)
+            while (1) {
+                if (nextRound == true) {
+                    console.log("$$$$$$$$$$$$$$捕捉，本回合结束$$$$$$$$$$$$$$")
+                    nextRound = false
+                    break
+                } else {
+                    await wait(100)
+                    console.log("等待捕捉回合结束")
+                }
+            }
+            while (1) {
+                if (catchSituation != "") {
+                    if (JSON.stringify(catchSituation).indexOf("getTime") != -1) {
+                        await wait(2000)
+                        break
+                    } else {
+                        writeLog("捕捉失败")
+                        await wait(1000)
+                        break
+                    }
+                } else {
+                    await wait(1000)
+                }
+            }
+            catchSituation = ""
+
+            //等待1s  等待288结算的出现
+            let oldTime = new Date().getTime()
+            while (1) {
+                if ((new Date().getTime() - oldTime) / 1000 < 2) {
+                    if (doneRound == true) {
+                        console.log("##############战斗结束##############")
+                        doneRound = false
+                        await wait(50)
+                        catchCount++
+                        return
+                    } else {
+                        await wait(50)
+                    }
+                } else {
+                    break
+                }
+            }
+
+            await wait(200)
+            await sendMsg(1057, {
+                "groupId": ""
+            })
+            await wait(200)
+        }
     }
 
     function getActionPVP() {
@@ -2006,183 +2178,9 @@
         }
     }
 
-    function getSelectedOptions() {
-        let selectElement = document.querySelector('#capsuleSelectId');
-        let selectedValue = selectElement.options[selectElement.selectedIndex].value;
-        return selectedValue;
-    }
-
     function getFrequency() {
         const frequency = document.querySelector('#frequency');
         return frequency.value;
-    }
-
-    function getRound() {
-        const round = document.querySelector('#round');
-        return round.value;
-    }
-
-    function getRandomIndex(array) {
-        let randomIndex = Math.floor(Math.random() * array.length);
-        return randomIndex;
-    }
-
-    async function sendSkillAndCatch(nowSkillId, capID) {
-        await sendMsg(1042, {
-            "groupId": "",
-            "battleType": 0
-        })
-        await wait(100)
-        await sendMsg(1045, {
-            "opType": 5,
-            "data": null,
-            "groupId": ""
-        })
-        await wait(100)
-        while (1) {
-            if (nextRound == true) {
-                writeLog("顺利进入对局！")
-                nextRound = false
-                break
-            } else {
-                await wait(50)
-            }
-        }
-        await wait(100)
-
-        while (1) {
-            await sendMsg(1057, {
-                "groupId": ""
-            })
-
-            await sendMsg(1045, {
-                "opType": 1,
-                "data": {
-                    "skillID": nowSkillId
-                },
-                "groupId": ""
-            })
-
-            var haveHp = PetMsgDetail.result.playerInfos[1].petInfos[0].crtHp
-            if (haveHp >= 500) {
-                writeLog("野怪开始HP异常：" + haveHp)
-                return
-            } else {
-                writeLog("野怪开始HP：" + haveHp)
-            }
-
-            while (1) {
-                if (nextRound == true) {
-                    writeLog("继续释放技能！")
-                    nextRound = false
-                    break
-                } else {
-                    await wait(50)
-                }
-            }
-            //等待1s  等待288结算的出现
-            let oldTime = new Date().getTime()
-            while (1) {
-                if ((new Date().getTime() - oldTime) / 1000 < 2) {
-                    if (doneRound == true) {
-                        console.log("##############战斗结束##############")
-                        doneRound = false
-                        await wait(50)
-                        catchCount++
-                        return
-                    } else {
-                        await wait(50)
-                    }
-                } else {
-                    break
-                }
-            }
-
-            if (haveHp <= 1) {
-                writeLog("野怪剩余HP：" + haveHp)
-                writeLog("开始捕捉！")
-                await wait(1000)
-                await sendMsg(1057, {
-                    "groupId": ""
-                })
-                await wait(1000)
-                break
-            }
-        }
-        let useC = 0
-        changePet = ""
-        while (1) {
-            if (useC >= catchRound) {
-                writeLog(catchRound + "回合还没捕捉到，跑路了")
-                await sendMsg(8201, {})
-                await sendMsg(8209, {})
-                //逃跑
-                await sendMsg(303, {})
-                return
-            }
-
-            useC++
-            writeLog("野怪剩余HP：" + haveHp)
-            writeLog("丢出第" + useC + "次胶囊捕捉~")
-            await sendMsg(1045, {
-                "opType": 3,
-                "data": {
-                    "itemID": capID
-                },
-                "groupId": ""
-            })
-
-            await wait(200)
-            while (1) {
-                if (nextRound == true) {
-                    console.log("$$$$$$$$$$$$$$捕捉，本回合结束$$$$$$$$$$$$$$")
-                    nextRound = false
-                    break
-                } else {
-                    await wait(100)
-                    console.log("等待捕捉回合结束")
-                }
-            }
-            while (1) {
-                if (catchSituation != "") {
-                    if (JSON.stringify(catchSituation).indexOf("getTime") != -1) {
-                        await wait(2000)
-                        break
-                    } else {
-                        writeLog("捕捉失败")
-                        await wait(1000)
-                        break
-                    }
-                } else {
-                    await wait(1000)
-                }
-            }
-            catchSituation = ""
-
-            //等待1s  等待288结算的出现
-            let oldTime = new Date().getTime()
-            while (1) {
-                if ((new Date().getTime() - oldTime) / 1000 < 2) {
-                    if (doneRound == true) {
-                        console.log("##############战斗结束##############")
-                        doneRound = false
-                        await wait(50)
-                        catchCount++
-                        return
-                    } else {
-                        await wait(50)
-                    }
-                } else {
-                    break
-                }
-            }
-
-            await wait(200)
-            await sendMsg(1057, {
-                "groupId": ""
-            })
-            await wait(200)
-        }
     }
 
     async function jingji() {
