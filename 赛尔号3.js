@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name            赛尔号启航Pc
-// @name:en         赛尔号启航Pc
-// @namespace       赛尔号启航Pc
+// @name            赛尔号启航护肝小助手
+// @name:en         赛尔号启航护肝小助手
+// @namespace       赛尔号启航护肝小助手
 // @version         0.1
-// @description     赛尔号启航Pc.
+// @description     赛尔号启航护肝小助手
 // @description:en  helpersaiier
 // @include         http://s.61.com/*
 // @require         https://greasyfork.org/scripts/372672-everything-hook/code/Everything-Hook.js?version=881251
