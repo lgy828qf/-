@@ -476,9 +476,9 @@
 
         setTimeout(() => {
             // 将 div 添加到页面中
-            let bdTag = document.getElementsByTagName("html")[0]
-            bdTag.appendChild(zoomFrame);
-            bdTag.appendChild(div);
+            let body = document.querySelector('body')
+            body.appendChild(zoomFrame);
+            body.appendChild(div);
         }, 5000)
 
     }
@@ -1734,14 +1734,13 @@
                 writeLog("顺利通关！，脚本结束")
                 break
             }
-            if (layers < 10) {
-                if (layers === 9) {
+            if (layers <= 10) {
+                if (layers === 9 || layers === 10) {
                     await ladderFight(2, '释放圣灵击', 14861)
                 } else {
                     await ladderFight(0, '释放幻化利刃', 100377)
                 }
-            }
-            if (layers >= 10) {
+            } else if (layers > 10) {
                 let Ha = false
                 if (Buff === true) {
                     Ha = true
